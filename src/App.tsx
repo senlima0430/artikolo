@@ -1,7 +1,9 @@
 import React from 'react'
 import './App.css'
 
-import Title from './components/Title'
+import { ArticleProvider } from './contexts/ArticleContext'
+
+import TextArea from './components/TextArea'
 
 function App() {
   return (
@@ -9,9 +11,13 @@ function App() {
       <header className="App-header">
         <h1>Artikolo</h1>
       </header>
-      <main className="App-main">
-        <Title />
-      </main>
+      <ArticleProvider>
+        <main className="App-main">
+          <article>
+            <TextArea />
+          </article>
+        </main>
+      </ArticleProvider>
     </div>
   )
 }
