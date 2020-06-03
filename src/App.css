@@ -1,6 +1,5 @@
 .App {
   position: relative;
-  padding: 0 10vw;
   padding-top: 1em;
   width: 80vw;
   height: calc(100vh - 1em);
@@ -9,7 +8,9 @@
 
 .App-header {
   user-select: none;
-  width: 100%;
+  padding: 0 5vw;
+  width: 90vw;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -22,5 +23,9 @@
 }
 
 .App-main {
-  margin: 2em 0 1em 0;
+  margin-top: 2em;
+  padding: 0 10vw;
+  width: 80vw;
+  min-height: calc(100vh - 3em - 40px);
+  text-align: left;
 }
