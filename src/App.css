@@ -1,7 +1,7 @@
 .App {
   position: relative;
   padding-top: 1em;
-  width: 80vw;
+  width: 100vw;
   height: calc(100vh - 1em);
   text-align: center;
 }
@@ -23,9 +23,16 @@
 }
 
 .App-main {
+  position: relative;
   margin-top: 2em;
-  padding: 0 10vw;
-  width: 80vw;
+  width: 100%;
   min-height: calc(100vh - 3em - 40px);
   text-align: left;
+}
+
+.App-main article {
+  position: relative;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 80vw;
 }

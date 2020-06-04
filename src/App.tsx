@@ -2,8 +2,7 @@ import React from 'react'
 import './App.css'
 
 import { ArticleProvider } from './contexts/ArticleContext'
-
-import TextArea from './components/TextArea'
+import { EditorProvider } from './contexts/EditorContext'
 
 function App() {
   return (
@@ -11,13 +10,13 @@ function App() {
       <header className="App-header">
         <h1>Artikolo</h1>
       </header>
-      <ArticleProvider>
-        <main className="App-main">
-          <article>
-            <TextArea />
-          </article>
-        </main>
-      </ArticleProvider>
+      <EditorProvider>
+        <ArticleProvider>
+          <main className="App-main">
+            <article />
+          </main>
+        </ArticleProvider>
+      </EditorProvider>
     </div>
   )
 }

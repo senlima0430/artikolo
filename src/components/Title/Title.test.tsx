@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, fireEvent } from '@testing-library/react'
-import Title from './Title'
+import Title from '.'
 
 describe('<Title />', () => {
   test('render correctly', () => {
