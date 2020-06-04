@@ -1,13 +1,11 @@
 import React, { useState } from 'react'
 import { IoIosAdd } from 'react-icons/io'
-import './TypeArea.css'
 
 interface TypeAreaProps {
   top: number
-  left: number
 }
 
-function TypeArea({ top, left }: TypeAreaProps) {
+function TypeArea({ top }: TypeAreaProps) {
   const [areaToggle, setToggle] = useState(false)
 
   function handleToolToggle() {
@@ -15,10 +13,7 @@ function TypeArea({ top, left }: TypeAreaProps) {
   }
 
   return (
-    <div
-      className="type-area__base"
-      style={{ top: `${top}px`, left: `${left / 2}px` }}
-    >
+    <div className="type-area__base" style={{ top: `${top}px` }}>
       <button
         className={`type-area__button ${areaToggle ? 'is_activate' : ''}`}
         type="button"

@@ -15,3 +15,8 @@ code {
 @import './abstruct/reset.css';
 @import './vendor/github-markdown.css';
 @import './App.css';
+
+@import './pages/home.css';
+
+@import './components/TypeArea.css';
+@import './components/TextInput.css';

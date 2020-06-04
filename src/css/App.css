@@ -29,10 +29,3 @@
   min-height: calc(100vh - 3em - 40px);
   text-align: left;
 }
-
-.App-main article {
-  position: relative;
-  margin: 0 auto;
-  padding: 0 20px;
-  width: 80vw;
-}
