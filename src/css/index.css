@@ -12,5 +12,6 @@ code {
     monospace;
 }
 
-@import './reset.css';
-@import './github-markdown.css';
+@import './abstruct/reset.css';
+@import './vendor/github-markdown.css';
+@import './App.css';
