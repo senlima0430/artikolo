@@ -1,3 +1,10 @@
+export function generateId(): string {
+  return (
+    Math.random().toString(36).substring(2, 4) +
+    Math.random().toString(36).substring(2, 4)
+  )
+}
+
 export function replaceItemAtIndex(
   arr: { id: string; type: string; value: string; isEdit: boolean }[],
   index: number,

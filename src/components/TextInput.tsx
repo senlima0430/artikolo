@@ -18,6 +18,7 @@ function TextInput({
   return (
     <input
       type="text"
+      autoFocus
       className={`text-input ${type}`}
       value={value}
       style={{ top: `${placement}px` }}
