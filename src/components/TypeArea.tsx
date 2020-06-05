@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
+import { useRecoilValue } from 'recoil'
 import { IoIosAdd } from 'react-icons/io'
+import { typeAreaState } from '../hooks/atoms'
 
-interface TypeAreaProps {
-  top: number
-}
-
-function TypeArea({ top }: TypeAreaProps) {
+function TypeArea() {
+  const typeArea = useRecoilValue(typeAreaState)
   const [areaToggle, setToggle] = useState(false)
 
   function handleToolToggle() {
@@ -13,7 +12,7 @@ function TypeArea({ top }: TypeAreaProps) {
   }
 
   return (
-    <div className="type-area__base" style={{ top: `${top}px` }}>
+    <div className="type-area__base" style={{ top: `${typeArea.top}px` }}>
       <button
         className={`type-area__button ${areaToggle ? 'is_activate' : ''}`}
         type="button"

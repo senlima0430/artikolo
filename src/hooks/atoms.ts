@@ -12,3 +12,11 @@ export const articleState = atom({
     }
   ]
 })
+
+export const typeAreaState = atom({
+  key: 'typeAreaState',
+  default: {
+    show: false,
+    top: 0
+  }
+})

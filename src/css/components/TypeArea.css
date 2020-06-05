@@ -1,6 +1,6 @@
 .type-area__base {
   position: absolute;
-  left: -60px;
+  left: -40px;
   width: 40px;
   height: 40px;
   margin-right: 0.5em;
@@ -8,6 +8,7 @@
 
 .type-area__button {
   position: relative;
+  top: -9px;
   padding: 0;
   width: 30px;
   height: 30px;

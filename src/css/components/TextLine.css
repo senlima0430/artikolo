@@ -1,0 +1,8 @@
+.text-line__input {
+  display: block;
+  width: 100%;
+}
+
+.text-line__input.p {
+  font-size: 21px;
+}
