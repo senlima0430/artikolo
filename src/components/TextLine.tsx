@@ -4,6 +4,7 @@ import { useRecoilState } from 'recoil'
 import update from 'immutability-helper'
 import { articleState } from '../hooks/atoms'
 import { generateId } from '../helper'
+import TypeArea from './TypeArea'
 
 interface TextLineProps {
   id: string
@@ -33,6 +34,8 @@ const TextLine = React.forwardRef(function TextLine(
   }
 
   function handleTextLineBlur() {
+    if (article.length === 1) return false
+
     const updatedLine = update(textLineProto, {
       isEdit: { $set: false }
     })
@@ -58,15 +61,19 @@ const TextLine = React.forwardRef(function TextLine(
   function handleTextLineEnter(e: React.KeyboardEvent) {
     e.preventDefault()
     if (e.key === 'Enter') {
+      const updatedLine = update(textLineProto, {
+        isEdit: { $set: false }
+      })
       const newArticle = update(article, {
         $push: [
           {
             id: generateId(),
             type: 'p',
             value: 'New line...',
-            isEdit: false
+            isEdit: true
           }
-        ]
+        ],
+        $splice: [[textLineIndex, 1, updatedLine]]
       })
 
       setArticle(newArticle)
@@ -75,19 +82,25 @@ const TextLine = React.forwardRef(function TextLine(
 
   return isEdit
     ? React.createElement(
-        'input',
-        {
-          className: `text-line__input ${type}`,
-          type: 'text',
-          ref: textLineInputRef,
-          value: value,
-          autoFocus: true,
-          onBlur: handleTextLineBlur,
-          onChange: handleTextLineChange,
-          onKeyUp: handleTextLineEnter,
-          placeholder: textLineIndex === 0 ? 'Title here..' : ''
-        },
-        null
+        React.Fragment,
+        null,
+        React.createElement(
+          'input',
+          {
+            className: `text-line__input ${type}`,
+            type: 'text',
+            ref: textLineInputRef,
+            value: value,
+            autoFocus: true,
+            onBlur: handleTextLineBlur,
+            onChange: handleTextLineChange,
+            onKeyUp: handleTextLineEnter,
+            placeholder:
+              article.length === 1 && value.length === 0 ? 'Title' : ''
+          },
+          null
+        ),
+        value.length === 0 && React.createElement(TypeArea, { top: 0 }, null)
       )
     : React.createElement(
         type,

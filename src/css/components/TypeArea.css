@@ -1,6 +1,6 @@
 .type-area__base {
   position: absolute;
-  left: calc(5vw - 20px);
+  left: -60px;
   width: 40px;
   height: 40px;
   margin-right: 0.5em;
