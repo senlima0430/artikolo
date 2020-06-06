@@ -68,6 +68,10 @@
   word-wrap: break-word;
 }
 
+.markdown-body p {
+  height: 1em;
+}
+
 .markdown-body details {
   display: block;
 }
