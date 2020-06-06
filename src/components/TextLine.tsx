@@ -23,47 +23,56 @@ function TextLine({ id, type, value, isEdit }: TextLineProps) {
   const textLineIndex = _.findIndex(article, textLineProto)
   const textLineInputRef = React.createRef<HTMLInputElement>()
 
-  function handleTextLineClick() {
-    const updatedLine = update(textLineProto, {
-      isEdit: { $set: true }
-    })
-    const newArticle = update(article, {
-      $splice: [[textLineIndex, 1, updatedLine]]
-    })
+  const isLastLine = article.length === 1
+  const isFirstLine = textLineIndex === 0
+  const isEmptyValue = value.length === 0
 
-    setArticle(newArticle)
-  }
-
-  function handleTextLineFocus() {
-    if (value.length === 0 && textLineInputRef.current) {
+  function setTypeAreaShow(status: boolean) {
+    if (textLineInputRef.current) {
       const { top } = textLineInputRef.current.getBoundingClientRect()
+
       setTypeArea({
-        show: true,
-        top: textLineIndex === 0 ? 0 : top - 48
+        show: status,
+        top: status ? (isFirstLine ? 0 : top - 48) : 0
       })
     }
   }
 
-  function handleTextLineBlur() {
-    setTypeArea({
-      show: false,
-      top: 0
+  function setFocusTextLine(status: boolean) {
+    const textLineFocus = update(textLineProto, {
+      isEdit: { $set: status }
+    })
+    const updatedArticle = update(article, {
+      $splice: [[textLineIndex, 1, textLineFocus]]
     })
 
-    if (article.length === 1 || value.length === 0) return false
-
-    const updatedLine = update(textLineProto, {
-      isEdit: { $set: false }
-    })
-    const newArticle = update(article, {
-      $splice: [[textLineIndex, 1, updatedLine]]
-    })
-
-    setArticle(newArticle)
+    setArticle(updatedArticle)
   }
 
+  // * When plain text clicked, turn to <input />
+  function handleTextLineClick() {
+    setFocusTextLine(true)
+  }
+
+  // * When <input /> focus && value is empty, show TypeArea
+  function handleTextLineFocus() {
+    setTypeAreaShow(isEmptyValue)
+  }
+
+  // * When <input /> blur, hide TypeArea
+  // * But if is first line, don't hide
+  function handleTextLineBlur() {
+    setTypeAreaShow(false)
+    if (!isLastLine) setFocusTextLine(false)
+    if (isFirstLine) setFocusTextLine(true)
+  }
+
+  // * Update <input /> value
   function handleTextLineChange(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault()
+    if (goDelete && e.target.value.length === 1) prepareDelete(false)
+    if (isEmptyValue) setTypeAreaShow(true)
+
     const updatedLine = update(textLineProto, {
       value: { $set: e.target.value }
     })
@@ -71,22 +80,15 @@ function TextLine({ id, type, value, isEdit }: TextLineProps) {
       $splice: [[textLineIndex, 1, updatedLine]]
     })
 
-    if (value.length === 0 && textLineInputRef.current) {
-      const { top } = textLineInputRef.current.getBoundingClientRect()
-      setTypeArea({
-        show: true,
-        top: textLineIndex === 0 ? 0 : top - 48
-      })
-    }
-
     setArticle(newArticle)
   }
 
-  function handleTextLineEnter(e: React.KeyboardEvent) {
+  function handleTextLineKeyUp(e: React.KeyboardEvent) {
     e.preventDefault()
+    // * Add a line to article
     if (e.key === 'Enter') {
       const updatedLine = update(textLineProto, {
-        isEdit: { $set: textLineIndex === 0 }
+        isEdit: { $set: true }
       })
       const updatedArticle = update(article, {
         $splice: [[textLineIndex, 1, updatedLine]]
@@ -105,33 +107,37 @@ function TextLine({ id, type, value, isEdit }: TextLineProps) {
       setArticle(newArticle)
     }
 
-    // TODO: WHAT THE FUCK WITH THAT SHIT
-    if (e.key === 'Backspace' && value.length === 0) {
-      if (article.length === 1) e.preventDefault()
-      if (!goDelete) prepareDelete(true)
+    if (e.key === 'Backspace' && isEmptyValue) {
+      if (!goDelete) {
+        setTypeAreaShow(true)
+        prepareDelete(true)
+      }
 
-      if (goDelete) {
-        const updatedLastLine = update(article[textLineIndex - 1], {
+      // * Reset previous line's focus state and delete line
+      if (goDelete && !isFirstLine) {
+        setTypeAreaShow(false)
+        const perviousLineIndex = textLineIndex - 1
+
+        const updatePreviousLine = update(article[perviousLineIndex], {
           isEdit: { $set: false }
         })
-        const firstStep = update(article, {
-          $splice: [[textLineIndex - 1, 1, updatedLastLine]]
+        const resetArticle = update(article, {
+          $splice: [[perviousLineIndex, 1, updatePreviousLine]]
         })
-        setArticle(firstStep)
+        setArticle(resetArticle)
 
-        const focusLastLine = update(firstStep[textLineIndex - 1], {
+        const resetPreviousLine = update(resetArticle[perviousLineIndex], {
           isEdit: { $set: true }
         })
-        const secondStep = update(firstStep, {
-          $splice: [[textLineIndex - 1, 1, focusLastLine]]
+        const updateArticle = update(resetArticle, {
+          $splice: [[perviousLineIndex, 1, resetPreviousLine]]
         })
-        setArticle(secondStep)
+        setArticle(updateArticle)
 
-        const updatedArticle = update(secondStep, {
+        const newArticle = update(updateArticle, {
           $splice: [[textLineIndex, 1]]
         })
-
-        setArticle(updatedArticle)
+        setArticle(newArticle)
       }
     }
   }
@@ -150,14 +156,13 @@ function TextLine({ id, type, value, isEdit }: TextLineProps) {
             autoFocus: true,
             onBlur: handleTextLineBlur,
             onFocus: handleTextLineFocus,
+            onKeyUp: handleTextLineKeyUp,
             onChange: handleTextLineChange,
-            onKeyUp: handleTextLineEnter,
-            placeholder:
-              article.length === 1 && value.length === 0 ? 'Title' : ''
+            placeholder: isFirstLine && isEmptyValue ? 'Title' : ''
           },
           null
         ),
-        value.length === 0 &&
+        isEmptyValue &&
           typeArea.show &&
           React.createElement(TypeArea, null, null)
       )

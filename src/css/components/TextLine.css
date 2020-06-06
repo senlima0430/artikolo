@@ -3,6 +3,10 @@
   width: 100%;
 }
 
+.text-line__input::placeholder {
+  color: #acacac;
+}
+
 .text-line__input.p {
   font-size: 21px;
 }
