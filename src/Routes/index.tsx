@@ -5,7 +5,7 @@ import NotFound from '../pages/NotFound'
 
 function Routes() {
   return (
-    <Router>
+    <Router style={{ height: 'calc(100vh - 48px)' }}>
       <Home path="/" />
       <NotFound default />
     </Router>
