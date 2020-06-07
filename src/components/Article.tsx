@@ -1,18 +1,21 @@
 import React from 'react'
-import { useRecoilValue } from 'recoil'
-import { articleState } from '../hooks/atoms'
-import TextLine from './TextLine'
+import { TextLine } from './TextLine'
+import { TypeArea } from './TypeArea'
+import { useArticle } from '../contexts'
 
-function Article() {
-  const article = useRecoilValue(articleState)
-
+export function Article(): JSX.Element {
+  const { content } = useArticle()
   return (
-    <article className="article markdown-body">
-      {article.map((line) => (
-        <TextLine key={line.id} line={line} />
-      ))}
-    </article>
+    <>
+      <TypeArea />
+      <article className="article artikolo">
+        {content.map((line) => (
+          <React.Fragment key={line.id}>
+            <TextLine line={line} />
+            <br />
+          </React.Fragment>
+        ))}
+      </article>
+    </>
   )
 }
-
-export default Article

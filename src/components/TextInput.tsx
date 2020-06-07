@@ -1,118 +1,142 @@
 import _ from 'lodash'
-import React from 'react'
-import { useRecoilState } from 'recoil'
-import update from 'immutability-helper'
+import React, { useEffect } from 'react'
 import { generateId } from '../helper'
-import { articleState } from '../hooks/atoms'
-import { TextLineState } from '../hooks/types'
+import { useTypeArea, useArticle, TextLineState } from '../contexts'
 
-interface TextInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+type TextInputProps = {
   proto: TextLineState
-  setTypeAreaRender: (status: boolean) => void
 }
 
-const TextInput = React.forwardRef<
-  HTMLInputElement,
-  TextInputProps & React.InputHTMLAttributes<HTMLInputElement>
->(function TextInput(
-  { proto, setTypeAreaRender, ...restProps }: TextInputProps,
-  ref
-) {
-  const [article, setArticle] = useRecoilState(articleState)
+export function TextInput({ proto }: TextInputProps): JSX.Element {
+  const { content, setContent } = useArticle()
+  const { typeArea, setTypeArea } = useTypeArea()
 
-  const textLineIndex = _.findIndex(article, proto)
-  const isEmpty = proto.value.length === 0
+  const { type, value, isFocus } = proto
+  const textLineIndex = _.findIndex(content, proto)
+  const textInputRef = React.createRef<HTMLInputElement>()
+  const isEmpty = value.length === 0
+  const isFirstLine = textLineIndex === 0
+
+  useEffect(
+    function elementStart() {
+      return function elementDeleted() {
+        setContent(function turnToText(draft) {
+          draft[textLineIndex].isEdit = false
+          draft[textLineIndex].isFocus = false
+        })
+        setTypeArea(function updateTypeAreaTop(draft) {
+          draft.show = false
+        })
+      }
+    },
+    [textLineIndex, setContent, setTypeArea]
+  )
+
+  useEffect(
+    function elementUpdated() {
+      const textLineNode = textInputRef.current
+      if (textLineNode) {
+        const { top } = textLineNode.getBoundingClientRect()
+        const scrollTop =
+          window.pageYOffset || document.documentElement.scrollTop
+
+        if (typeArea.top !== top + scrollTop - 45 && isEmpty && isFocus) {
+          setTypeArea(function updateTypeAreaTop(draft) {
+            draft.top = top + scrollTop - 45
+          })
+        }
+      }
+    },
+    [textInputRef, typeArea, setTypeArea, isFocus, isEmpty]
+  )
 
   function destroySelf() {
-    const updatedArticle = update(article, {
-      $splice: [[textLineIndex, 1, { ...proto, isEdit: false }]]
+    setContent(function turnToText(draft) {
+      draft[textLineIndex].isEdit = false
+      draft[textLineIndex].isFocus = false
     })
+  }
 
-    setArticle(updatedArticle)
+  function setTypeAreaShow(status: boolean) {
+    setTypeArea(function updateTypeAreaShow(draft) {
+      draft.show = status
+    })
   }
 
   function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault()
-    if (isEmpty) setTypeAreaRender(true)
-
-    const newArticle = update(article, {
-      $splice: [[textLineIndex, 1, { ...proto, value: e.target.value }]]
+    const updatedValue = e.target.value
+    setContent(function updateTextLineValue(draft) {
+      draft[textLineIndex].value = updatedValue
     })
-
-    setArticle(newArticle)
   }
 
   function handleOnFocus() {
-    if (isEmpty) setTypeAreaRender(true)
+    if (isEmpty) {
+      setTypeAreaShow(true)
+      setContent(function addTextLine(draft) {
+        draft[textLineIndex].isFocus = true
+      })
+    }
   }
 
   function handleOnBlur() {
-    if (textLineIndex === 0 && isEmpty) {
-      return
-    }
-
-    if (isEmpty) setTypeAreaRender(false)
-    if (article.length > 1) destroySelf()
+    setTypeAreaShow(false)
+    destroySelf()
   }
 
   function handleOnKeyDown(e: React.KeyboardEvent) {
     if (e.which === 13) {
-      const updatedArticle = update(article, {
-        $splice: [[textLineIndex, 1, { ...proto, isEdit: false }]]
+      setContent(function addTextLine(draft) {
+        draft[textLineIndex].isEdit = false
+        draft[textLineIndex].isFocus = false
+        draft.push({
+          id: generateId(),
+          type: 'p',
+          value: '',
+          isEdit: true,
+          isFocus: true
+        })
       })
-      const newArticle = update(updatedArticle, {
-        $push: [
-          {
-            id: generateId(),
-            type: 'p',
-            value: '',
-            isEdit: true
-          }
-        ]
-      })
-
-      setArticle(newArticle)
+      setTypeAreaShow(true)
     }
 
     if (e.which === 8) {
-      if (textLineIndex !== 0 && isEmpty) {
-        setTypeAreaRender(false)
+      if (value.length === 1) {
+        setTypeAreaShow(true)
+        setContent(function deleteTheLastValue(draft) {
+          draft[textLineIndex].value = ''
+        })
+      }
+
+      if (!isFirstLine && isEmpty) {
         const perviousLineIndex = textLineIndex - 1
-        const previousLine = article[perviousLineIndex]
-
-        const resetArticle = update(article, {
-          $splice: [[perviousLineIndex, 1, { ...previousLine, isEdit: false }]]
+        setContent(function deleteTheTextLine(draft) {
+          draft[perviousLineIndex].isEdit = true
+          draft[perviousLineIndex].isFocus = true
+          draft.splice(textLineIndex, 1)
         })
-        setArticle(resetArticle)
-
-        const updateArticle = update(resetArticle, {
-          $splice: [[perviousLineIndex, 1, { ...previousLine, isEdit: true }]]
-        })
-        setArticle(updateArticle)
-
-        const newArticle = update(updateArticle, {
-          $splice: [[textLineIndex, 1]]
-        })
-        setArticle(newArticle)
       }
     }
   }
 
+  function handleOnKeyUp(e: React.KeyboardEvent) {
+    if (e.which !== 8 && e.which !== 13 && isEmpty) setTypeAreaShow(false)
+  }
+
   return (
     <input
-      className={`text-line__input ${proto.type}`}
+      className={`text-line__input ${type}`}
       type="text"
-      autoFocus
-      ref={ref}
-      value={proto.value}
+      ref={textInputRef}
+      value={value}
       onBlur={handleOnBlur}
+      autoFocus={isFocus}
       onFocus={handleOnFocus}
       onChange={handleOnChange}
+      onKeyUp={handleOnKeyUp}
       onKeyDown={handleOnKeyDown}
-      placeholder={textLineIndex === 0 ? 'Type here...' : ''}
-      {...restProps}
+      placeholder={textLineIndex === 0 ? 'Type here...' : 'empty line'}
     />
   )
-})
-
-export default TextInput
+}

@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react'
-import Routes from './Routes'
+import React from 'react'
+import { Routes } from './Routes'
 
-function App() {
-  useEffect(() => {
+export function App() {
+  React.useEffect(function detectBackspaceOnBody() {
     window.onkeydown = function (e: KeyboardEvent) {
       if (e.keyCode === 8 && e.target === document.body) e.preventDefault()
     }
   }, [])
+
   return (
     <div className="App">
       <main className="App-main">
@@ -15,5 +16,3 @@ function App() {
     </div>
   )
 }
-
-export default App

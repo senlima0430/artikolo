@@ -1,8 +1,6 @@
 import React from 'react'
 import { RouteComponentProps } from '@reach/router'
 
-function NotFound(props: RouteComponentProps) {
+export function NotFound(props: RouteComponentProps): JSX.Element {
   return <div />
 }
-
-export default NotFound
