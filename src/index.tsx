@@ -1,16 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { RecoilRoot } from 'recoil'
 import './css/index.css'
-import App from './App'
+import { App } from './App'
+import { ArticleProvider, TypeAreaProvider } from './contexts'
 // import * as serviceWorker from './serviceWorker'
 
 ReactDOM.render(
-  <React.StrictMode>
-    <RecoilRoot>
+  <ArticleProvider>
+    <TypeAreaProvider>
       <App />
-    </RecoilRoot>
-  </React.StrictMode>,
+    </TypeAreaProvider>
+  </ArticleProvider>,
   document.getElementById('root')
 )
 

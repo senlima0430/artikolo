@@ -1,27 +1,23 @@
-import React, { useState } from 'react'
-import { useRecoilValue } from 'recoil'
+import React from 'react'
 import { IoIosAdd } from 'react-icons/io'
-import { typeAreaState } from '../hooks/atoms'
+import { useTypeArea } from '../contexts'
 
-function TypeArea() {
-  const typeArea = useRecoilValue(typeAreaState)
-  const [areaToggle, setToggle] = useState(false)
-
-  function handleToolToggle() {
-    setToggle(!areaToggle)
-  }
-
+export function TypeArea(): JSX.Element {
+  const { typeArea } = useTypeArea()
   return (
-    <div className="type-area__base" style={{ top: `${typeArea.top}px` }}>
+    <div
+      className="type-area__base"
+      style={{
+        top: `${typeArea.top}px`,
+        display: typeArea.show ? 'block' : 'none'
+      }}
+    >
       <button
-        className={`type-area__button ${areaToggle ? 'is_activate' : ''}`}
+        className={`type-area__button ${false ? 'is_activate' : ''}`}
         type="button"
-        onClick={handleToolToggle}
       >
         <IoIosAdd />
       </button>
     </div>
   )
 }
-
-export default TypeArea

@@ -1,5 +1,6 @@
 @import './abstruct/reset.css';
 @import './vendor/github-markdown.css';
+@import './artikolo.css';
 
 @import './App.css';
 @import './components/Article.css';
