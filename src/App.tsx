@@ -1,5 +1,8 @@
 import React from 'react'
-import { Routes } from './Routes'
+import { Router } from '@reach/router'
+
+import { Home } from './pages/Home'
+import { NotFound } from './pages/NotFound'
 
 export function App() {
   React.useEffect(function detectBackspaceOnBody() {
@@ -9,10 +12,9 @@ export function App() {
   }, [])
 
   return (
-    <div className="App">
-      <main className="App-main">
-        <Routes />
-      </main>
-    </div>
+    <Router>
+      <Home path="/" />
+      <NotFound default />
+    </Router>
   )
 }

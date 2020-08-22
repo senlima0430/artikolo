@@ -1,11 +1,34 @@
 import React from 'react'
 import { RouteComponentProps } from '@reach/router'
-import { Article } from '../components/Article'
+import styled from 'styled-components'
 
-export function Home(props: RouteComponentProps): JSX.Element {
+import { EditorView } from '@/modules/editor/View'
+import { PreviewView } from '@/modules/preview/View'
+
+const Wrapper = styled.div`
+  margin: 0 auto;
+  width: 90vw;
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+`
+
+const Block = styled.div`
+  flex: 1;
+  min-width: 320px;
+  padding-top: 5vh;
+  height: 95vh;
+`
+
+export function Home(props: RouteComponentProps) {
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
-      <Article />
-    </div>
+    <Wrapper>
+      <Block>
+        <EditorView />
+      </Block>
+      <Block>
+        <PreviewView />
+      </Block>
+    </Wrapper>
   )
 }
