@@ -1,8 +1,0 @@
-.text-line__input {
-  display: block;
-  width: 100%;
-}
-
-.text-line__input::placeholder {
-  color: #cacaca;
-}
